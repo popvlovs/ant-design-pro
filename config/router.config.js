@@ -16,7 +16,12 @@ export default [
           {
             path: '/oauth/user',
             name: 'user',
-            component: './Oauth/OAuthUser',
+            component: './Oauth/OauthUser',
+          },
+          {
+            path: '/oauth/app',
+            name: 'app',
+            component: './Oauth/OauthApp',
           },
         ],
       },
