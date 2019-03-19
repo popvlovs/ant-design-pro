@@ -22,7 +22,7 @@ export async function batchDelete(params) {
 }
 
 export async function update(params) {
-  return request(`/system/application/${params.id}`, {
+  return request(`/system/application/${params.clientId}`, {
     method: 'PUT',
     body: {
       ...params,

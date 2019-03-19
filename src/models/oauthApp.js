@@ -3,7 +3,7 @@ import * as oauthAppService from '../services/oauthApp';
 export default {
   namespace: 'oauthApps',
   state: {
-    data: [],
+    data: []
   },
   reducers: {
     save(

@@ -331,7 +331,7 @@ class OauthUser extends PureComponent {
       },
     },
     {
-      title: '失效时间',
+      title: '有效期',
       dataIndex: 'expireDate',
       render(val) {
         if (!!val) {

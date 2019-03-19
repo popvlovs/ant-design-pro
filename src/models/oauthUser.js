@@ -5,24 +5,18 @@ export default {
   state: {
     list: [],
     total: 0,
+    listAll: []
   },
   reducers: {
-    save(
-      state,
-      {
-        payload: { list, total },
-      }
-    ) {
+    save(state, { payload: { list, total } }) {
       return { ...state, list, total };
     },
+    saveAll(state, { payload: { list } }) {
+      return { ...state, listAll: list };
+    }
   },
   effects: {
-    *fetch(
-      {
-        payload: { currentPage, pageSize, params },
-      },
-      { call, put }
-    ) {
+    *fetch({ payload: { currentPage, pageSize, params }, }, { call, put }) {
       const { data } = yield call(oauthUserService.fetch, {
         currentPage,
         pageSize,
@@ -30,6 +24,10 @@ export default {
       });
       const { list, total } = data;
       yield put({ type: 'save', payload: { list, total } });
+    },
+    *fetchAll({ payload }, { call, put }) {
+      const { data: {list} } = yield call(oauthUserService.fetchAll, {});
+      yield put({ type: 'saveAll', payload: { list } })
     },
     *add({ payload, callback }, { call }) {
       const { data } = yield call(oauthUserService.add, payload);
