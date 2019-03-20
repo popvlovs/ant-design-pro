@@ -32,6 +32,10 @@ export default {
       const { data } = yield call(oauthAppService.update, payload);
       if (callback) callback(data);
     },
+    *updateBindUsers({ payload, callback }, { call }) {
+      const { data } = yield call(oauthAppService.setApplicationUser, payload)
+      if (callback) callback(data)
+    }
   },
   subscriptions: {
     setup({ dispatch, history }) {

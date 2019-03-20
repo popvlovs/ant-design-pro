@@ -178,14 +178,58 @@ class ApplicationForm extends PureComponent {
   loading: loading.models.oauthUsers,
 }))
 class ApplicationUserTransfer extends PureComponent {
+
+  constructor(props) {
+    super(props);
+  }
+
+  state = {
+    targetKeys: null
+  }
+
   componentDidMount() {
     const { dispatch } = this.props
     dispatch({
       type: 'oauthUsers/fetchAll',
     });
   }
+
+  componentWillReceiveProps(props) {
+    this.setState({ targetKeys: props.selectedKeys });
+  }
+
+  okHandle = () => {
+    const { dispatch, clientId, handleUserAppModalVisible } = this.props
+    const { targetKeys } = this.state
+
+    if (targetKeys == null) {
+      handleUserAppModalVisible(false)
+      return
+    }
+
+    const onUpdateBinUserSuccess = () => {
+      message.success('编辑授权用户成功');
+      dispatch({
+        type: 'oauthApps/fetch',
+        payload: {},
+      });
+      handleUserAppModalVisible(false)
+    };
+
+    dispatch({
+      type: 'oauthApps/updateBindUsers',
+      payload: { clientId, users: targetKeys },
+      callback: onUpdateBinUserSuccess,
+    });
+  }
+
+  handleChange = (targetKeys) => {
+    this.setState({ targetKeys })
+  }
+
   render() {
-    const { modalVisible, selectedKeys, oauthUsers, handleUserAppModalVisible } = this.props
+    const { modalVisible, oauthUsers, handleUserAppModalVisible, selectedKeys } = this.props
+    const { targetKeys } = this.state
     const dataSource = oauthUsers.listAll ? oauthUsers.listAll.map(user => {
       return {
         key: user.id,
@@ -208,7 +252,7 @@ class ApplicationUserTransfer extends PureComponent {
             width: 300,
             height: 300,
           }}
-          targetKeys={selectedKeys}
+          targetKeys={targetKeys || selectedKeys}
           onChange={this.handleChange}
           render={item => `${item.title}`}
           showSearch
@@ -232,6 +276,7 @@ class OauthApp extends PureComponent {
     deleteConfirmVisible: false,
     userAppModalVisible: false,
     userAppSelectedKeys: [],
+    userAppClientId: ''
   }
 
   onSetAuthorizedUsers({ clientId }) {
@@ -241,7 +286,8 @@ class OauthApp extends PureComponent {
       const selectedUsers = clientInfo.users.map(user => user.id)
       this.setState({
         userAppModalVisible: true,
-        userAppSelectedKeys: selectedUsers
+        userAppSelectedKeys: selectedUsers,
+        userAppClientId: clientId
       });
     }
   }
@@ -336,7 +382,7 @@ class OauthApp extends PureComponent {
 
   render() {
     const { oauthApps, loading } = this.props
-    const { modalVisible, modelEditMode, modalFormValues, userAppModalVisible, userAppSelectedKeys, deleteConfirmVisible, deleteItem } = this.state
+    const { modalVisible, modelEditMode, modalFormValues, userAppModalVisible, userAppSelectedKeys, userAppClientId, deleteConfirmVisible, deleteItem, } = this.state
 
     const CardInfo = ({ item }) => (
       <div className={styles.cardInfo}>
@@ -399,7 +445,7 @@ class OauthApp extends PureComponent {
               )
           }
         />
-        <ApplicationUserTransfer handleUserAppModalVisible={this.handleUserAppModalVisible} modalVisible={userAppModalVisible} selectedKeys={userAppSelectedKeys} />
+        <ApplicationUserTransfer handleUserAppModalVisible={this.handleUserAppModalVisible} modalVisible={userAppModalVisible} clientId={userAppClientId} selectedKeys={userAppSelectedKeys} />
         <ApplicationForm {...parentMethods} values={modalFormValues} modalVisible={modalVisible} editMode={modelEditMode} />
         <Modal
           title="请确认"

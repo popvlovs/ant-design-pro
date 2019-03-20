@@ -14,6 +14,15 @@ export async function add(params) {
   });
 }
 
+export async function setApplicationUser(params) {
+  return request(`/system/application/users`, {
+    method: 'POST',
+    body: {
+      ...params
+    }
+  })
+}
+
 export async function batchDelete(params) {
   const ids = params.join(',');
   return request(`/system/application/${ids}`, {
